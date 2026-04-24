@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14</title>
+  <title>Agenda Polare v14.1</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -924,9 +924,12 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onE
   const today=todayStr();
   const circleStroke = isDark?'rgba(56,189,248,.08)':'rgba(14,100,165,.10)';
   const dividerStroke= isDark?'rgba(148,163,184,.65)':'rgba(100,116,139,.48)';
-  const dayFrameStroke = isDark?'rgba(148,163,184,.42)':'rgba(100,116,139,.34)';
-  const labelFillStrong = isDark?'rgba(167,139,250,.95)':'rgba(124,58,237,.88)';
-  const labelFill = isDark?'rgba(226,232,240,.72)':'rgba(30,41,59,.62)';
+  const dayFrameStroke    = isDark?'rgba(148,163,184,.42)':'rgba(100,116,139,.34)';
+  const dayFrameWeekend   = isDark?'rgba(167,139,250,.70)':'rgba(124,58,237,.60)';
+  const weekendBg         = isDark?'rgba(167,139,250,.10)':'rgba(124,58,237,.07)';
+  const weekendNumFill    = isDark?'rgba(192,170,255,.95)':'rgba(109,40,217,.90)';
+  const labelFillStrong   = isDark?'rgba(167,139,250,.95)':'rgba(124,58,237,.88)';
+  const labelFill         = isDark?'rgba(226,232,240,.72)':'rgba(30,41,59,.62)';
   const centerBg     = isDark?'rgba(4,13,30,.95)':'rgba(240,244,248,.97)';
   const centerStroke = isDark?'rgba(56,189,248,.15)':'rgba(14,100,165,.20)';
   const centerTxt    = isDark?'rgba(56,189,248,.75)':'rgba(14,100,165,.85)';
@@ -947,7 +950,11 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onE
 
   const dayOuterPaths=sliceDates.map((wd,i)=>{
     const a1=ANG0+i*SLICE+.45,a2=a1+SLICE-.9;
-    return <path key={'frm'+i} d={arcPath(dayRingInner,dayRingOuter,a1,a2)} fill="none" stroke={dayFrameStroke} strokeWidth="0.95" strokeLinejoin="round"/>;
+    const isWE=dayIndex(wd)>=5;
+    return <path key={'frm'+i} d={arcPath(dayRingInner,dayRingOuter,a1,a2)}
+      fill={isWE?(isDark?'rgba(167,139,250,.12)':'rgba(124,58,237,.08)'):'none'}
+      stroke={isWE?dayFrameWeekend:dayFrameStroke}
+      strokeWidth={isWE?"1.3":"0.95"} strokeLinejoin="round"/>;
   });
 
   const dividers=Array.from({length:N},(_,i)=>{
@@ -962,7 +969,7 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onE
   const weekendHL=sliceDates.map((wd,i)=>{
     if(dayIndex(wd)<5)return null;
     const a1=ANG0+i*SLICE+.2,a2=a1+SLICE-.4;
-    return <path key={'we'+i} d={arcPath(R[0],R[3],a1,a2)} fill="rgba(167,139,250,.05)" stroke="none"/>;
+    return <path key={'we'+i} d={arcPath(R[0],R[3],a1,a2)} fill={weekendBg} stroke="none"/>;
   });
   const todayHL=sliceDates.map((wd,i)=>{
     if(d2s(wd)!==today)return null;
@@ -974,11 +981,13 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onE
     const mid=ANG0+(i+.5)*SLICE;
     const [lx,ly]=pt(labelRad,mid);
     const ds=d2s(wd),isT=ds===today;
-    const numFill=isT?'#f43f5e':labelFillStrong;
+    const isWE=dayIndex(wd)>=5;
+    const numFill=isT?'#f43f5e':isWE?weekendNumFill:labelFillStrong;
     const numSize=isMonth?'8.8':N<=2?'12':'9.4';
+    const numWeight=isWE?'800':'700';
     return(
       <text key={'lbl'+i} x={lx.toFixed(2)} y={(ly+3).toFixed(2)} textAnchor="middle"
-        fill={numFill} fontSize={numSize} fontFamily="Exo 2,sans-serif" fontWeight="700">{wd.getDate()}</text>
+        fill={numFill} fontSize={numSize} fontFamily="Exo 2,sans-serif" fontWeight={numWeight}>{wd.getDate()}</text>
     );
   });
 
