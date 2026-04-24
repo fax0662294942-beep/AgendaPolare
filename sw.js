@@ -1,8 +1,7 @@
-// ===== AGENDA POLARE — Service Worker =====
-const CACHE_NAME = 'agenda-polare-v14.1';
-const CACHE_CDN  = 'agenda-polare-cdn-v11';
+// ===== AGENDA POLARE — Service Worker v14.2 =====
+const CACHE_NAME = 'agenda-polare-v14.2';
+const CACHE_CDN  = 'agenda-polare-cdn-v14.2';
 
-// File locali: sempre in cache
 const LOCAL_FILES = [
   './index.html',
   './manifest.json',
@@ -10,7 +9,6 @@ const LOCAL_FILES = [
   './icon-512.png',
 ];
 
-// CDN esterne: cache con strategia network-first, fallback cache
 const CDN_URLS = [
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js',
@@ -21,7 +19,13 @@ const CDN_URLS = [
   'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap',
 ];
 
-// ── INSTALL: precache file locali ──────────────────────────────────────────
+// Risponde a SKIP_WAITING dal client per aggiornamento immediato
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('install', event => {
   event.waitUntil(
     Promise.all([
@@ -30,41 +34,38 @@ self.addEventListener('install', event => {
         Promise.allSettled(CDN_URLS.map(url =>
           fetch(url, { mode: 'cors' })
             .then(res => { if (res.ok) cache.put(url, res); })
-            .catch(() => {/* CDN non raggiungibile al primo avvio */})
+            .catch(() => {})
         ))
       ),
     ]).then(() => self.skipWaiting())
   );
 });
 
-// ── ACTIVATE: rimuovi cache vecchie ───────────────────────────────────────
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys
           .filter(k => k !== CACHE_NAME && k !== CACHE_CDN)
-          .map(k => caches.delete(k))
+          .map(k => { console.log('SW: elimino cache vecchia', k); return caches.delete(k); })
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// ── FETCH: strategia per tipo di risorsa ─────────────────────────────────
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = request.url;
 
-  // Richieste Firestore / Firebase Auth → sempre network (dati real-time)
+  // Firestore / Auth → sempre network
   if (url.includes('firestore.googleapis.com') ||
       url.includes('identitytoolkit.googleapis.com') ||
-      url.includes('securetoken.googleapis.com') ||
-      url.includes('firebase') && url.includes('/v1/')) {
+      url.includes('securetoken.googleapis.com')) {
     event.respondWith(fetch(request).catch(() => new Response('', { status: 503 })));
     return;
   }
 
-  // File locali → Cache First (sempre aggiornati all'install)
+  // File locali → Cache First
   if (url.includes(self.location.origin)) {
     event.respondWith(
       caches.match(request).then(cached => cached || fetch(request).then(res => {
@@ -78,12 +79,9 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // CDN esterne → Network First con fallback cache
-  if (CDN_URLS.some(u => url.startsWith(u.split('?')[0])) ||
-      url.includes('fonts.googleapis.com') ||
-      url.includes('fonts.gstatic.com') ||
-      url.includes('unpkg.com') ||
-      url.includes('gstatic.com')) {
+  // CDN → Network First con fallback cache
+  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com') ||
+      url.includes('unpkg.com') || url.includes('gstatic.com')) {
     event.respondWith(
       fetch(request)
         .then(res => {
@@ -94,16 +92,11 @@ self.addEventListener('fetch', event => {
           return res;
         })
         .catch(() => caches.match(request).then(cached =>
-          cached || new Response('/* offline */', {
-            headers: { 'Content-Type': 'application/javascript' }
-          })
+          cached || new Response('/* offline */', { headers: { 'Content-Type': 'application/javascript' } })
         ))
     );
     return;
   }
 
-  // Tutto il resto → Network con fallback cache
-  event.respondWith(
-    fetch(request).catch(() => caches.match(request))
-  );
+  event.respondWith(fetch(request).catch(() => caches.match(request)));
 });

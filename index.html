@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.1</title>
+  <title>Agenda Polare v14.2</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1819,8 +1819,20 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(r => console.log('SW registrato', r.scope))
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+          .then(reg => {
+            console.log('SW v14.2 registrato', reg.scope);
+            // Forza aggiornamento immediato se c'è una nuova versione
+            reg.addEventListener('updatefound', () => {
+              const newSW = reg.installing;
+              newSW.addEventListener('statechange', () => {
+                if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                  newSW.postMessage({ type: 'SKIP_WAITING' });
+                  window.location.reload();
+                }
+              });
+            });
+          })
           .catch(e => console.warn('SW errore', e));
       });
     }
