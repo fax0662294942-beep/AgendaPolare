@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare</title>
+  <title>Agenda Polare v14</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -189,9 +189,8 @@
     .share-action{padding:5px 10px;border-radius:7px;border:none;font-family:'Exo 2',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
     .share-action.invite{background:rgba(56,189,248,.15);color:var(--accent)}
     .share-action.send{background:rgba(34,211,238,.15);color:#22d3ee}
-    .tpl-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-    .tpl-row::-webkit-scrollbar{display:none}
-    .tpl-chip{padding:7px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Exo 2',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+    .tpl-row{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:2px}
+        .tpl-chip{padding:7px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Exo 2',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
     .tpl-chip.add{border-style:dashed;color:var(--accent)}
     .tpl-help{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
     .mbtn{flex:1;padding:10px;border-radius:10px;border:none;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
@@ -201,6 +200,73 @@
     .mbtn-cancel{background:var(--surface2);color:var(--muted)}
 
     .loading{flex:1;display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px}
+    /* TAG */
+    .tag-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+    .tag-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Exo 2',sans-serif;font-size:11px;font-weight:500}
+    .tag-chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:0 0 0 2px}
+    .tag-input-row{display:flex;gap:6px}
+    .tag-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 11px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+    .tag-input:focus{border-color:var(--accent)}
+    .tag-add-btn{padding:7px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--accent);font-size:13px;cursor:pointer;transition:all .2s}
+    .tag-add-btn:hover{border-color:var(--accent)}
+    /* RATING */
+    .rating-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+    .stars-wrap{display:flex;gap:4px}
+    .star-btn{background:none;border:none;cursor:pointer;padding:2px;line-height:1;font-size:26px;transition:transform .1s;-webkit-tap-highlight-color:transparent}
+    .star-btn:active{transform:scale(.85)}
+    .star-filled{color:#fbbf24}
+    .star-empty{color:transparent;-webkit-text-stroke:1.5px #fbbf24}
+    .rating-lbl{font-size:11px;color:var(--muted);min-width:30px}
+    /* TAG in lista */
+    .ev-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+    .ev-tag{font-size:9px;padding:1px 6px;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+    .ev-stars{font-size:11px;color:#fbbf24;letter-spacing:1px;margin-top:1px}
+    /* FASCIA ORARIA */
+    .fascia-row{display:flex;gap:7px;margin:6px 0 10px}
+    .fascia-btn{flex:1;padding:9px 4px;border-radius:10px;border:1px solid;font-family:'Exo 2',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px}
+    .fascia-btn span.ft{font-size:9px;opacity:.65;font-weight:400}
+    .fascia-btn.morning{border-color:var(--morning);color:var(--morning)}
+    .fascia-btn.morning.sel{background:rgba(251,191,36,.18);border-width:2px}
+    .fascia-btn.afternoon{border-color:var(--afternoon);color:var(--afternoon)}
+    .fascia-btn.afternoon.sel{background:rgba(34,211,238,.18);border-width:2px}
+    .fascia-btn.evening{border-color:var(--evening);color:var(--evening)}
+    .fascia-btn.evening.sel{background:rgba(167,139,250,.18);border-width:2px}
+
+    /* ── PRIVATE MODE ── */
+    .private-border{position:fixed;inset:0;pointer-events:none;z-index:9998;border:2px solid rgba(167,139,250,.5);border-radius:0}
+    .private-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.4);color:#a78bfa;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
+    .secret-trigger{width:18px;height:18px;border-radius:50%;background:transparent;border:none;cursor:pointer;opacity:0;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+
+    /* ── PIN MODAL ── */
+    .pin-overlay{position:fixed;inset:0;background:rgba(4,13,30,.96);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center}
+    .pin-box{background:var(--surface);border-radius:22px;padding:28px 24px;width:90%;max-width:320px;border:1px solid rgba(167,139,250,.3);display:flex;flex-direction:column;align-items:center;gap:16px}
+    .pin-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#a78bfa;letter-spacing:2px;text-align:center}
+    .pin-sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
+    .pin-dots{display:flex;gap:14px;margin:4px 0}
+    .pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(167,139,250,.5);transition:background .15s}
+    .pin-dot.filled{background:#a78bfa;border-color:#a78bfa}
+    .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+    .pin-key{padding:14px 0;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Exo 2',sans-serif;font-size:18px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent}
+    .pin-key:active{background:rgba(167,139,250,.2);border-color:#a78bfa}
+    .pin-key.del{font-size:14px;color:var(--muted)}
+    .pin-key.empty{background:transparent;border-color:transparent;cursor:default}
+    .pin-err{color:#f87171;font-size:12px;text-align:center}
+    .pin-cancel{background:transparent;border:none;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:12px;cursor:pointer;padding:4px 12px;text-decoration:underline}
+    /* TOAST BACK */
+    .back-toast{position:fixed;bottom:calc(var(--nav-h) + 70px);left:50%;transform:translateX(-50%);background:rgba(15,34,68,.95);color:var(--text);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-size:12px;z-index:9999;pointer-events:none;white-space:nowrap;backdrop-filter:blur(4px)}
+    /* TEMPLATE MANAGE */
+    .tpl-manage-row{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+    .tpl-manage-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+    .tpl-manage-name{flex:1;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tpl-manage-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--text);font-family:'Exo 2',sans-serif;font-size:12px;outline:none;padding:2px 0}
+    .tpl-manage-color{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+    .tpl-icon-btn{padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;flex-shrink:0;transition:all .15s}
+    .tpl-icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .tpl-icon-btn.del:hover{border-color:var(--today);color:var(--today)}
+    .tpl-default-badge{font-size:9px;color:var(--muted);padding:1px 5px;border-radius:6px;border:1px solid var(--border);flex-shrink:0}
+    .tpl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+    .tpl-manage-btn{padding:3px 9px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:10px;cursor:pointer;transition:all .2s}
+    .tpl-manage-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(56,189,248,.1)}
   </style>
 </head>
 <body>
@@ -243,20 +309,31 @@ const DEFAULT_EVENT_TEMPLATES=[
   {id:'camper_weekend',name:'Camper',title:'Camper',allDay:true,startTime:'00:00',endTime:'23:59',daySpan:2,color:'#34d399',important:false,notes:''},
 ];
 
-function templateKey(uid){return 'agenda_polare_templates_'+uid}
-function loadTemplates(uid){
-  try{
-    const raw=localStorage.getItem(templateKey(uid));
-    const parsed=raw?JSON.parse(raw):[];
-    return [...DEFAULT_EVENT_TEMPLATES,...(Array.isArray(parsed)?parsed:[])];
-  }catch(e){
-    return [...DEFAULT_EVENT_TEMPLATES];
-  }
+function templateKey(uid,priv=false){return 'agenda_polare_templates'+(priv?'_priv':'')+'_'+uid}
+function deletedDefaultKey(uid,priv=false){return 'agenda_polare_del_defaults'+(priv?'_priv':'')+'_'+uid}
+function loadDeletedDefaults(uid,priv=false){
+  try{return JSON.parse(localStorage.getItem(deletedDefaultKey(uid,priv))||'[]');}catch(e){return [];}
 }
-function saveCustomTemplates(uid,templates){
+function saveDeletedDefaults(uid,ids,priv=false){
+  try{localStorage.setItem(deletedDefaultKey(uid,priv),JSON.stringify(ids));}catch(e){}
+}
+function loadTemplates(uid,priv=false){
   try{
-    const custom=(templates||[]).filter(t=>!DEFAULT_EVENT_TEMPLATES.some(dt=>dt.id===t.id));
-    localStorage.setItem(templateKey(uid),JSON.stringify(custom));
+    const raw=localStorage.getItem(templateKey(uid,priv));
+    const parsed=raw?JSON.parse(raw):[];
+    // L'agenda privata non ha modelli di default predefiniti
+    if(priv) return Array.isArray(parsed)?parsed:[];
+    const deleted=loadDeletedDefaults(uid,false);
+    const defaults=DEFAULT_EVENT_TEMPLATES.filter(t=>!deleted.includes(t.id));
+    return [...defaults,...(Array.isArray(parsed)?parsed:[])];
+  }catch(e){return priv?[]:([...DEFAULT_EVENT_TEMPLATES]);}
+}
+function saveCustomTemplates(uid,templates,priv=false){
+  try{
+    const custom=priv
+      ?(templates||[])  // privati: salva tutto (nessun default da escludere)
+      :(templates||[]).filter(t=>!DEFAULT_EVENT_TEMPLATES.some(dt=>dt.id===t.id));
+    localStorage.setItem(templateKey(uid,priv),JSON.stringify(custom));
   }catch(e){}
 }
 const D_SHORT=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
@@ -291,7 +368,28 @@ function splitBands(sMin,eMin){
 }
 
 // ===== FIRESTORE =====
-function evCol(uid){return db.collection('users').doc(uid).collection('agenda_polare')}
+function evCol(uid,priv=false){
+  return db.collection('users').doc(uid).collection(priv?'agenda_privata':'agenda_polare');
+}
+
+// ── PIN helpers ──
+async function sha256(text){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function savePin(uid,pin){
+  const hash=await sha256(pin+'_ap_salt_'+uid);
+  await db.collection('users').doc(uid).set({pinHash:hash},{merge:true});
+}
+async function checkPin(uid,pin){
+  const hash=await sha256(pin+'_ap_salt_'+uid);
+  const snap=await db.collection('users').doc(uid).get();
+  return snap.exists&&snap.data().pinHash===hash;
+}
+async function hasPin(uid){
+  const snap=await db.collection('users').doc(uid).get();
+  return snap.exists&&!!snap.data().pinHash;
+}
 
 async function saveUserProfile(user){
   await db.collection('user_profiles').doc(user.uid).set({
@@ -308,13 +406,13 @@ async function findUserByEmail(email){
   return{uid:snap.docs[0].id,...snap.docs[0].data()};
 }
 
-async function saveEv(uid,ev){
+async function saveEv(uid,ev,priv=false){
   const{id,...data}=ev;
-  if(id){await evCol(uid).doc(id).set(data);return id;}
-  const ref=await evCol(uid).add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});return ref.id;
+  if(id){await evCol(uid,priv).doc(id).set(data);return id;}
+  const ref=await evCol(uid,priv).add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});return ref.id;
 }
 
-async function deleteEv(uid,id){await evCol(uid).doc(id).delete()}
+async function deleteEv(uid,id,priv=false){await evCol(uid,priv).doc(id).delete()}
 
 async function shareEventWith(ownerUid,ev,targetUid){
   // Copia evento nel calendario del destinatario
@@ -331,6 +429,74 @@ async function shareEventWith(ownerUid,ev,targetUid){
       sharedWith: firebase.firestore.FieldValue.arrayUnion(targetUid)
     });
   }
+}
+
+// ===== PIN MODAL =====
+function PinModal({uid, mode, onSuccess, onCancel}){
+  // mode: 'setup'|'setup2'|'enter'
+  const[phase,setPhase]   = useState(mode==='setup'?'setup':'enter');
+  const[pin,setPin]       = useState('');
+  const[first,setFirst]   = useState('');
+  const[err,setErr]       = useState('');
+  const[loading,setLoading]= useState(false);
+
+  const add=async(d)=>{
+    if(loading)return;
+    const next=pin+d;
+    setPin(next);
+    setErr('');
+    if(next.length<4)return;
+    setLoading(true);
+    // PIN completo
+    if(phase==='setup'){
+      setFirst(next);setPin('');setPhase('setup2');setLoading(false);return;
+    }
+    if(phase==='setup2'){
+      if(next!==first){setErr('I PIN non coincidono');setPin('');setFirst('');setPhase('setup');setLoading(false);return;}
+      await savePin(uid,next);
+      setLoading(false);onSuccess();return;
+    }
+    if(phase==='enter'){
+      const ok=await checkPin(uid,next);
+      setLoading(false);
+      if(ok){onSuccess();}
+      else{setErr('PIN errato');setPin('');}
+      return;
+    }
+  };
+  const del=()=>{if(loading)return;setPin(p=>p.slice(0,-1));setErr('');};
+
+  const titles={setup:'IMPOSTA PIN',setup2:'CONFERMA PIN',enter:'AREA PRIVATA'};
+  const subs={
+    setup:'Scegli un PIN di 4 cifre per proteggere la tua agenda segreta.',
+    setup2:'Reinserisci il PIN per confermare.',
+    enter:'Inserisci il PIN per accedere.'
+  };
+  const keys=['1','2','3','4','5','6','7','8','9','','0','del'];
+
+  return(
+    <div className="pin-overlay">
+      <div className="pin-box">
+        <div style={{fontSize:28}}>🔒</div>
+        <div className="pin-title">{titles[phase]}</div>
+        <div className="pin-sub">{subs[phase]}</div>
+        <div className="pin-dots">
+          {[0,1,2,3].map(i=>(
+            <div key={i} className={'pin-dot'+(pin.length>i?' filled':'')}/>
+          ))}
+        </div>
+        {err&&<div className="pin-err">{err}</div>}
+        <div className="pin-keypad">
+          {keys.map((k,i)=>(
+            k===''?<div key={i} className="pin-key empty"/>:
+            k==='del'?<button key={i} className="pin-key del" onClick={del}>⌫</button>:
+            <button key={i} className="pin-key" onClick={()=>add(k)}>{k}</button>
+          ))}
+        </div>
+        <button className="pin-cancel" onClick={onCancel}>Annulla</button>
+      </div>
+    </div>
+  );
 }
 
 // ===== STELLE =====
@@ -408,7 +574,7 @@ function Toggle({checked,onChange,label,sub}){
 }
 
 // ===== EVENT MODAL =====
-function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onSave,onDelete,onClose}){
+function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onDeleteTemplate,onEditTemplate,onSave,onDelete,onClose}){
   const isNew=!ev.id;
   const d0=ev.date||defDate||todayStr();
   const[title,   setTitle]   = useState(ev.title||'');
@@ -420,11 +586,17 @@ function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onSave,onDe
   const[important,setImportant]=useState(ev.important||false);
   const[color,   setColor]   = useState(ev.color||PALETTE[5]);
   const[notes,   setNotes]   = useState(ev.notes||'');
+  const[tags,    setTags]    = useState(ev.tags||[]);
+  const[tagInput,setTagInput]= useState('');
+  const[rating,  setRating]  = useState(ev.rating||0);
   const[saving,  setSaving]  = useState(false);
   // Condivisione
   const[shareEmail,setShareEmail]=useState('');
   const[shareResult,setShareResult]=useState(null); // null|{found,user}|'searching'|'sent'
   const[sharing,setSharing]=useState(false);
+  const[tplManage,setTplManage]=useState(false);   // mostra UI gestione modelli
+  const[editingTpl,setEditingTpl]=useState(null);   // {id, name} in editing
+  const[activeFascia,setActiveFascia]=useState(null); // 'morning'|'afternoon'|'evening'|null
 
   const applyTemplate=(tpl)=>{
     const baseStart=startD||d0;
@@ -437,6 +609,25 @@ function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onSave,onDe
     setStartT(tpl.startTime||'09:00');
     setEndT(tpl.endTime||'10:00');
     setEndD(d2s(addDays(new Date(baseStart+'T12:00:00'),span-1)));
+  };
+
+  const FASCE={
+    morning:  {label:'Mattina',   icon:'🌅', from:'00:00',to:'13:00'},
+    afternoon:{label:'Pomeriggio',icon:'☀️', from:'13:00',to:'18:00'},
+    evening:  {label:'Sera',      icon:'🌙', from:'18:00',to:'23:59'},
+  };
+
+  const applyFascia=(id)=>{
+    const f=FASCE[id];
+    if(activeFascia===id){
+      // Secondo tap: deseleziona
+      setActiveFascia(null);
+      return;
+    }
+    setActiveFascia(id);
+    setAllDay(false);
+    setStartT(f.from);
+    setEndT(f.to);
   };
 
   const saveAsTemplate=()=>{
@@ -455,6 +646,15 @@ function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onSave,onDe
       notes
     });
   };
+
+  // Tag helpers
+  const addTag=()=>{
+    const t=(tagInput||'').trim().toLowerCase().replace(/\s+/g,'-');
+    if(!t||tags.includes(t))return;
+    setTags(prev=>[...prev,t]);
+    setTagInput('');
+  };
+  const removeTag=t=>setTags(prev=>prev.filter(x=>x!==t));
 
   // Sincronizza endD se startD avanza oltre endD
   const handleStartD=v=>{
@@ -476,7 +676,9 @@ function EventModal({ev,defDate,currentUser,templates,onSaveTemplate,onSave,onDe
       allDay,
       important,
       color,
-      notes
+      notes,
+      tags,
+      rating
     });
     setSaving(false);
   };
@@ -530,12 +732,61 @@ Scarica Agenda Polare per visualizzarlo.`
           <input className="fi" value={title} onChange={e=>setTitle(e.target.value)} placeholder="Nome evento..." autoFocus/></div>
 
         {/* Modelli */}
-        <div className="fg"><label className="flbl">Modelli rapidi</label>
-          <div className="tpl-row">
-            {templates.map(tpl=><button key={tpl.id} type="button" className="tpl-chip" onClick={()=>applyTemplate(tpl)}>{tpl.name}</button>)}
-            <button type="button" className="tpl-chip add" onClick={saveAsTemplate}>+ Salva come modello</button>
+        <div className="fg">
+          <div className="tpl-header">
+            <label className="flbl" style={{margin:0}}>Modelli rapidi</label>
+            <button type="button" className={'tpl-manage-btn'+(tplManage?' on':'')}
+              onClick={()=>{setTplManage(m=>!m);setEditingTpl(null);}}>
+              {tplManage?'✓ Chiudi':'✏️ Gestisci'}
+            </button>
           </div>
-          <div className="tpl-help">I modelli precompilano l'evento e restano modificabili prima del salvataggio.</div>
+
+          {!tplManage?(
+            <>
+              <div className="tpl-row">
+                {templates.map(tpl=>(
+                  <button key={tpl.id} type="button" className="tpl-chip" onClick={()=>applyTemplate(tpl)}>{tpl.name}</button>
+                ))}
+                <button type="button" className="tpl-chip add" onClick={saveAsTemplate}>+ Salva</button>
+              </div>
+              <div className="tpl-help">Tocca un modello per precompilare l'evento.</div>
+            </>
+          ):(
+            <div className="tpl-manage-row">
+              {templates.map(tpl=>{
+                const isDefault=DEFAULT_EVENT_TEMPLATES.some(d=>d.id===tpl.id);
+                const isEditing=editingTpl&&editingTpl.id===tpl.id;
+                return(
+                  <div key={tpl.id} className="tpl-manage-item">
+                    <div className="tpl-manage-color" style={{background:tpl.color}}/>
+                    {isEditing?(
+                      <input className="tpl-manage-input" autoFocus
+                        value={editingTpl.name}
+                        onChange={e=>setEditingTpl(t=>({...t,name:e.target.value}))}
+                        onKeyDown={e=>{
+                          if(e.key==='Enter'){onEditTemplate({...tpl,name:editingTpl.name});setEditingTpl(null);}
+                          if(e.key==='Escape')setEditingTpl(null);
+                        }}/>
+                    ):(
+                      <span className="tpl-manage-name">{tpl.name}</span>
+                    )}
+                    {isDefault&&<span className="tpl-default-badge">default</span>}
+                    {!isDefault&&!isEditing&&(
+                      <button className="tpl-icon-btn" title="Rinomina"
+                        onClick={()=>setEditingTpl({id:tpl.id,name:tpl.name})}>✏️</button>
+                    )}
+                    {!isDefault&&isEditing&&(
+                      <button className="tpl-icon-btn" title="Salva nome"
+                        onClick={()=>{onEditTemplate({...tpl,name:editingTpl.name});setEditingTpl(null);}}>✓</button>
+                    )}
+                    <button className="tpl-icon-btn del" title="Elimina"
+                      onClick={()=>onDeleteTemplate(tpl.id,isDefault)}>🗑</button>
+                  </div>
+                );
+              })}
+              {templates.length===0&&<div className="tpl-help">Nessun modello salvato.</div>}
+            </div>
+          )}
         </div>
 
         {/* Date inizio / fine */}
@@ -545,14 +796,31 @@ Scarica Agenda Polare per visualizzarlo.`
           <input className="fi" type="date" value={endD} min={startD} onChange={e=>setEndD(e.target.value)}/></div>
 
         {/* Giorno intero toggle */}
-        <Toggle checked={allDay} onChange={setAllDay} label="Giorno intero" sub="Disattiva orari specifici"/>
+        <Toggle checked={allDay} onChange={v=>{setAllDay(v);if(v)setActiveFascia(null);}}
+          label="Giorno intero" sub="Disattiva orari specifici"/>
+
+        {/* Pulsanti fascia oraria */}
+        {!allDay&&(
+          <div className="fascia-row">
+            {Object.entries(FASCE).map(([id,f])=>(
+              <button key={id} type="button"
+                className={'fascia-btn '+id+(activeFascia===id?' sel':'')}
+                onClick={()=>applyFascia(id)}>
+                {f.icon} {f.label}
+                <span className="ft">{f.from}–{f.to}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Orari (se non tutto il giorno) */}
         {!allDay&&(
           <div className="fg"><label className="flbl">Dalle → Alle</label>
             <div className="frow">
-              <input className="fi" type="time" value={startT} onChange={e=>setStartT(e.target.value)}/>
-              <input className="fi" type="time" value={endT} onChange={e=>setEndT(e.target.value)}/>
+              <input className="fi" type="time" value={startT}
+                onChange={e=>{setStartT(e.target.value);setActiveFascia(null);}}/>
+              <input className="fi" type="time" value={endT}
+                onChange={e=>{setEndT(e.target.value);setActiveFascia(null);}}/>
             </div></div>
         )}
 
@@ -566,6 +834,45 @@ Scarica Agenda Polare per visualizzarlo.`
         {/* Note */}
         <div className="fg"><label className="flbl">Note</label>
           <input className="fi" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Facoltativo..."/></div>
+
+        {/* Tag */}
+        <div className="fg">
+          <label className="flbl">Tag</label>
+          {tags.length>0&&(
+            <div className="tag-wrap">
+              {tags.map(t=>(
+                <span key={t} className="tag-chip">
+                  #{t}<button onClick={()=>removeTag(t)}>×</button>
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="tag-input-row">
+            <input className="tag-input" value={tagInput}
+              onChange={e=>setTagInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();addTag();}}}
+              placeholder="es. lavoro, famiglia…"/>
+            <button className="tag-add-btn" onClick={addTag}>+</button>
+          </div>
+        </div>
+
+        {/* Rating */}
+        <div className="fg">
+          <label className="flbl">Valutazione</label>
+          <div className="rating-row">
+            <div className="stars-wrap">
+              {[1,2,3,4,5].map(n=>(
+                <button key={n} className="star-btn"
+                  onClick={()=>setRating(rating===n?0:n)}>
+                  <span className={n<=rating?'star-filled':'star-empty'}>★</span>
+                </button>
+              ))}
+            </div>
+            <span className="rating-lbl">
+              {rating===0?'–':rating+'/5'}
+            </span>
+          </div>
+        </div>
 
         {/* Azioni */}
         <div className="mactions">
@@ -954,7 +1261,7 @@ function MonthGridView({year,month,events,onDayClick}){
           const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
           const evs=byDay[ds]||[];
           const isT=ds===todayStr();
-          const isWE=(i+off)%7>=5;
+          const isWE=i%7>=5;
           return(
             <div key={i} className={'mg-cell'+(isT?' today':'')+(isWE&&!isT?' weekend':'')}
               onClick={()=>onDayClick(ds)}>
@@ -997,6 +1304,14 @@ function AgendaListView({events,onEventClick}){
                     {ev.endDate&&ev.endDate!==ev.date?' · fino al '+ev.endDate:''}
                     {ev.notes?' · '+ev.notes:''}
                   </div>
+                  {ev.rating>0&&(
+                    <div className="ev-stars">{'★'.repeat(ev.rating)+'☆'.repeat(5-ev.rating)}</div>
+                  )}
+                  {ev.tags&&ev.tags.length>0&&(
+                    <div className="ev-tags">
+                      {ev.tags.map(t=><span key={t} className="ev-tag">#{t}</span>)}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -1017,7 +1332,7 @@ function MainApp({user}){
   // polarFilter: 'full'|'work'|'weekend'
   const[polarFilter,setPolarFilter] = useState('full');
   // calSub: 'week'|'month'
-  const[calSub,setCalSub]     = useState('week');
+  const[calSub,setCalSub]     = useState('month');
   // calWeekSub: 'full'|'work'|'weekend' (solo per cal griglia settimana)
   const[calWeekSub,setCalWeekSub] = useState('full');
 
@@ -1033,17 +1348,123 @@ function MainApp({user}){
     const saved=localStorage.getItem('agenda_theme');
     return saved?saved==='dark':true; // default scuro
   });
-  const[templates,setTemplates] = useState(()=>loadTemplates(user.uid));
-  const swipeRef = useRef({x:0,y:0,t:0,active:false});
+  const[templates,setTemplates] = useState(()=>loadTemplates(user.uid,false));
+  const swipeRef       = useRef({x:0,y:0,t:0,active:false});
+  const lastBackRef    = useRef(0);
+  const secretTapRef   = useRef({count:0,t:0});
+  const[backToast,setBackToast]     = useState(false);
+  const[isPrivate,setIsPrivate]     = useState(false);
+  const[showPinModal,setShowPinModal]= useState(false);
+  const[pinMode,setPinMode]         = useState('enter');
 
   useEffect(()=>{
     document.documentElement.classList.toggle('light',!isDark);
     localStorage.setItem('agenda_theme',isDark?'dark':'light');
   },[isDark]);
 
+  // ── AUTO-LOCK area privata quando app va in background ──
   useEffect(()=>{
-    setTemplates(loadTemplates(user.uid));
-  },[user.uid]);
+    const onVis=()=>{if(document.hidden&&isPrivate){setIsPrivate(false);setModal(null);}};
+    document.addEventListener('visibilitychange',onVis);
+    return()=>document.removeEventListener('visibilitychange',onVis);
+  },[isPrivate]);
+
+  // ── Apertura area privata (triplo tap su titolo) ──
+  const handleSecretTap=async()=>{
+    const now=Date.now();
+    const ref=secretTapRef.current;
+    if(now-ref.t>500){
+      // Reset sequenza
+      ref.count=1;ref.t=now;
+    } else {
+      ref.count+=1;ref.t=now;
+      if(ref.count>=3){
+        // Triplo tap!
+        ref.count=0;ref.t=0;
+        if(isPrivate){setIsPrivate(false);return;}
+        const has=await hasPin(user.uid);
+        setPinMode(has?'enter':'setup');
+        setShowPinModal(true);
+      }
+    }
+  };
+
+  const handlePinSuccess=()=>{
+    setShowPinModal(false);
+    setIsPrivate(true);
+    setModal(null);
+  };
+
+  // ── ANDROID BACK BUTTON ──
+  useEffect(()=>{
+    // Inserisci uno stato iniziale in history per poter intercettare il back
+    history.pushState({ap:'home'},document.title);
+
+    const handlePop=()=>{
+      // 1. Chiudi modal se aperto
+      if(document.querySelector('.overlay')){
+        setModal(null);
+        history.pushState({ap:'modal_closed'},document.title);
+        return;
+      }
+      // 2. Giorno → torna a polare
+      setView(v=>{
+        if(v==='day'){
+          history.pushState({ap:'polar'},document.title);
+          return 'polar';
+        }
+        return v;
+      });
+      // 3. Cal mese → cal settimana
+      setCalSub(cs=>{
+        if(cs==='month'){
+          history.pushState({ap:'cal-week'},document.title);
+          return 'week';
+        }
+        return cs;
+      });
+      // 4. Vista non polare → torna a polare
+      setView(v=>{
+        if(v!=='polar'&&v!=='day'){
+          history.pushState({ap:'polar'},document.title);
+          return 'polar';
+        }
+        return v;
+      });
+      // 5. Già su polare settimana → doppio tap per uscire
+      setPolarPeriod(pp=>{
+        setView(vv=>{
+          if(vv==='polar'&&pp==='week'){
+            const now=Date.now();
+            if(now-lastBackRef.current<2000){
+              // Secondo tap → esci
+              window.close();
+              if(window.Android) window.Android.exitApp();
+              history.go(-2); // fallback browser
+            } else {
+              lastBackRef.current=now;
+              setBackToast(true);
+              setTimeout(()=>setBackToast(false),2000);
+              history.pushState({ap:'home'},document.title); // re-push
+            }
+          } else {
+            // Torna a polare settimana
+            setPolarPeriod('week');
+            history.pushState({ap:'polar-week'},document.title);
+          }
+          return vv;
+        });
+        return pp;
+      });
+    };
+
+    window.addEventListener('popstate',handlePop);
+    return()=>window.removeEventListener('popstate',handlePop);
+  },[]);
+
+  useEffect(()=>{
+    setTemplates(loadTemplates(user.uid,isPrivate));
+  },[user.uid,isPrivate]);
 
   const toggleTheme=()=>setIsDark(d=>!d);
 
@@ -1133,7 +1554,7 @@ function MainApp({user}){
     setLoading(true);
     // Usiamo una finestra un po' più ampia per catturare eventi multi-giorno che iniziano prima
     const extStart=d2s(addDays(new Date(period.start+'T12:00:00'),-31));
-    const unsub=evCol(user.uid)
+    const unsub=evCol(user.uid,isPrivate)
       .where('date','>=',extStart).where('date','<=',period.end)
       .onSnapshot(snap=>{
         const all=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1147,19 +1568,39 @@ function MainApp({user}){
         setLoading(false);
       }, err=>{console.error(err);setLoading(false);});
     return()=>unsub();
-  },[period.start,period.end,user.uid]);
+  },[period.start,period.end,user.uid,isPrivate]);
 
   const toggleFilter=bid=>setFilters(prev=>prev.includes(bid)?prev.length>1?prev.filter(f=>f!==bid):prev:[...prev,bid]);
   const invertOrder=()=>setOrder(p=>[...p].reverse());
   const handleSaveTemplate=tpl=>{
     setTemplates(prev=>{
       const next=[...prev,tpl];
-      saveCustomTemplates(user.uid,next);
+      saveCustomTemplates(user.uid,next,isPrivate);
       return next;
     });
   };
-  const handleSave=async ev=>{await saveEv(user.uid,ev);setModal(null);};
-  const handleDelete=async id=>{await deleteEv(user.uid,id);setModal(null);};
+  const handleDeleteTemplate=(id,isDefault)=>{
+    if(isDefault&&!isPrivate){
+      const deleted=loadDeletedDefaults(user.uid,false);
+      if(!deleted.includes(id)){
+        saveDeletedDefaults(user.uid,[...deleted,id],false);
+      }
+    }
+    setTemplates(prev=>{
+      const next=prev.filter(t=>t.id!==id);
+      saveCustomTemplates(user.uid,next,isPrivate);
+      return next;
+    });
+  };
+  const handleEditTemplate=tpl=>{
+    setTemplates(prev=>{
+      const next=prev.map(t=>t.id===tpl.id?tpl:t);
+      saveCustomTemplates(user.uid,next,isPrivate);
+      return next;
+    });
+  };
+  const handleSave=async ev=>{await saveEv(user.uid,ev,isPrivate);setModal(null);};
+  const handleDelete=async id=>{await deleteEv(user.uid,id,isPrivate);setModal(null);};
   const goToDay=ds=>{setSelDay(ds);setView('day');};
 
   const posLabel=bid=>{const i=order.indexOf(bid);return i===0?'est.':i===1?'cen.':'int.';};
@@ -1205,7 +1646,13 @@ function MainApp({user}){
 
         {/* HEADER */}
         <div className="header">
-          <div className="app-title">POLARE</div>
+          <div className="app-title" onClick={handleSecretTap}
+            style={{userSelect:'none',WebkitUserSelect:'none'}}>POLARE</div>
+          {isPrivate&&(
+            <div className="private-badge" onClick={()=>{setIsPrivate(false);setModal(null);}}>
+              🔒 privata
+            </div>
+          )}
           <div className="nav-center">
             {showNav&&<button className="nav-btn" onClick={goPrev}>‹</button>}
             <span className="nav-lbl">{navLabel}</span>
@@ -1306,21 +1753,35 @@ function MainApp({user}){
         {/* FAB */}
         <button className="fab" onClick={()=>setModal({ev:{date:defDate()},defDate:defDate()})}>+</button>
 
+        {/* BACK TOAST */}
+        {backToast&&<div className="back-toast">Premi ancora per uscire</div>}
+
+        {/* BORDO AREA PRIVATA */}
+        {isPrivate&&<div className="private-border"/>}
+
+        {/* PIN MODAL */}
+        {showPinModal&&(
+          <PinModal uid={user.uid} mode={pinMode}
+            onSuccess={handlePinSuccess}
+            onCancel={()=>setShowPinModal(false)}/>
+        )}
+
         {/* MODAL */}
         {modal&&<EventModal ev={modal.ev} defDate={modal.defDate} currentUser={user}
           templates={templates} onSaveTemplate={handleSaveTemplate}
+          onDeleteTemplate={handleDeleteTemplate} onEditTemplate={handleEditTemplate}
           onSave={handleSave} onDelete={handleDelete} onClose={()=>setModal(null)}/>}
 
         {/* BOTTOM NAV */}
         <div className="bottom-nav">
-          <button className={'bn-tab'+(view==='polar'?' on':'')} onClick={()=>setView('polar')}>
-            <span className="bn-icon">◎</span><span>Polare</span>
+          <button className={'bn-tab'+(view==='day'?' on':'')} onClick={()=>setView('day')}>
+            <span className="bn-icon">⊙</span><span>Giorno</span>
           </button>
           <button className={'bn-tab'+(view==='cal'?' on':'')} onClick={()=>setView('cal')}>
             <span className="bn-icon">⊞</span><span>Griglia</span>
           </button>
-          <button className={'bn-tab'+(view==='day'?' on':'')} onClick={()=>setView('day')}>
-            <span className="bn-icon">⊙</span><span>Giorno</span>
+          <button className={'bn-tab'+(view==='polar'?' on':'')} onClick={()=>setView('polar')}>
+            <span className="bn-icon">◎</span><span>Polare</span>
           </button>
           <button className={'bn-tab'+(view==='agenda'?' on':'')} onClick={()=>setView('agenda')}>
             <span className="bn-icon">≡</span><span>Lista</span>

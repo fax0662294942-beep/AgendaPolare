@@ -9,7 +9,10 @@
   "background_color": "#040d1e",
   "theme_color": "#040d1e",
   "lang": "it",
-  "categories": ["productivity", "utilities"],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "icon-192.png",
@@ -31,7 +34,13 @@
       "short_name": "Nuovo",
       "description": "Crea un nuovo evento",
       "url": "./index.html",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
-  ]
+  ],
+  "version": "14.0"
 }

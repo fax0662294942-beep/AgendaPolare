@@ -1,6 +1,6 @@
 // ===== AGENDA POLARE — Service Worker =====
-const CACHE_NAME = 'agenda-polare-v10';
-const CACHE_CDN  = 'agenda-polare-cdn-v10';
+const CACHE_NAME = 'agenda-polare-v14';
+const CACHE_CDN  = 'agenda-polare-cdn-v11';
 
 // File locali: sempre in cache
 const LOCAL_FILES = [
