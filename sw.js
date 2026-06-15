@@ -1,5 +1,5 @@
-const CACHE_NAME = 'agenda-polare-v14.6';
-const CACHE_CDN  = 'agenda-polare-cdn-v14.6';
+const CACHE_NAME = 'agenda-polare-v14.7';
+const CACHE_CDN  = 'agenda-polare-cdn-v14.7';
 const LOCAL_FILES = ['./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 const CDN_URLS = [
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',

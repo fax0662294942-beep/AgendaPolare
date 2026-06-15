@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.6</title>
+  <title>Agenda Polare v14.7</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -200,9 +200,9 @@
     .mbtn-cancel{background:var(--surface2);color:var(--muted)}
 
     /* ── WEEKEND VIEW ── */
-    .we-wrap{flex:1;overflow-y:auto;padding:6px 10px 80px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .we-wrap{flex:1;overflow-y:auto;padding:6px 10px 80px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;touch-action:pan-y}
     .we-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .we-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s;position:relative;user-select:none;-webkit-user-select:none}
+    .we-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s;position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y}
     .we-card.custom{border:2px solid var(--accent);box-shadow:0 0 12px rgba(56,189,248,.18)}
     .we-card-hdr{padding:8px 10px 6px;border-bottom:1px solid var(--border)}
     .we-card-range{font-size:11px;font-weight:700;color:var(--text);line-height:1.3}
@@ -1577,8 +1577,8 @@ function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventCli
       e.preventDefault();
       if(dx<0) onNext(); else onPrev();
     };
-    el.addEventListener('touchstart',onTS,{passive:true});
-    el.addEventListener('touchend',  onTE,{passive:false}); // non-passivo per preventDefault
+    el.addEventListener('touchstart',onTS,{passive:false}); // non-passivo: cattura coords subito
+    el.addEventListener('touchend',  onTE,{passive:false});
     return()=>{
       el.removeEventListener('touchstart',onTS);
       el.removeEventListener('touchend',  onTE);
