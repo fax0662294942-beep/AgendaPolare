@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.4</title>
+  <title>Agenda Polare v14.5</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1556,10 +1556,24 @@ function WeekendCard({weekend,events,onLongPress,onEventClick}){
 }
 
 // ===== WEEKEND GRID VIEW =====
-function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick}){
+function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick,onPrev,onNext}){
   const weekends=getWeekendsForMonth(year,month,weekendCustom);
+  const swRef=useRef({x:0,y:0,t:0});
+
+  const onTS=e=>{
+    const t=e.touches&&e.touches[0]; if(!t) return;
+    swRef.current={x:t.clientX,y:t.clientY,t:Date.now()};
+  };
+  const onTE=e=>{
+    const s=swRef.current;
+    const t=e.changedTouches&&e.changedTouches[0]; if(!t) return;
+    const dx=t.clientX-s.x, dy=t.clientY-s.y, dt=Date.now()-s.t;
+    if(dt>700||Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.1) return;
+    if(dx<0) onNext(); else onPrev();
+  };
+
   return(
-    <div className="we-wrap">
+    <div className="we-wrap" onTouchStart={onTS} onTouchEnd={onTE}>
       <div className="we-grid">
         {weekends.map(we=>(
           <WeekendCard key={we.satStr} weekend={we} events={events}
@@ -2120,7 +2134,8 @@ function MainApp({user}){
             events={events}
             weekendCustom={weekendCustom}
             onLongPress={we=>setWeExtModal(we)}
-            onEventClick={ev=>setModal({ev,defDate:ev.date})}/>
+            onEventClick={ev=>setModal({ev,defDate:ev.date})}
+            onPrev={goPrev} onNext={goNext}/>
         )}
 
         {/* FAB */}
