@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.5</title>
+  <title>Agenda Polare v14.6</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1558,22 +1558,35 @@ function WeekendCard({weekend,events,onLongPress,onEventClick}){
 // ===== WEEKEND GRID VIEW =====
 function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick,onPrev,onNext}){
   const weekends=getWeekendsForMonth(year,month,weekendCustom);
+  const wrapRef=useRef(null);
   const swRef=useRef({x:0,y:0,t:0});
 
-  const onTS=e=>{
-    const t=e.touches&&e.touches[0]; if(!t) return;
-    swRef.current={x:t.clientX,y:t.clientY,t:Date.now()};
-  };
-  const onTE=e=>{
-    const s=swRef.current;
-    const t=e.changedTouches&&e.changedTouches[0]; if(!t) return;
-    const dx=t.clientX-s.x, dy=t.clientY-s.y, dt=Date.now()-s.t;
-    if(dt>700||Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.1) return;
-    if(dx<0) onNext(); else onPrev();
-  };
+  // Listener DOM non-passivi: bypassa la gestione nativa dello scroll del browser
+  useEffect(()=>{
+    const el=wrapRef.current; if(!el) return;
+    const onTS=(e)=>{
+      const t=e.touches&&e.touches[0]; if(!t) return;
+      swRef.current={x:t.clientX,y:t.clientY,t:Date.now()};
+    };
+    const onTE=(e)=>{
+      const s=swRef.current;
+      const t=e.changedTouches&&e.changedTouches[0]; if(!t) return;
+      const dx=t.clientX-s.x, dy=t.clientY-s.y, dt=Date.now()-s.t;
+      if(dt>700||Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.1) return;
+      // Swipe orizzontale rilevato: previene scroll e cambia mese
+      e.preventDefault();
+      if(dx<0) onNext(); else onPrev();
+    };
+    el.addEventListener('touchstart',onTS,{passive:true});
+    el.addEventListener('touchend',  onTE,{passive:false}); // non-passivo per preventDefault
+    return()=>{
+      el.removeEventListener('touchstart',onTS);
+      el.removeEventListener('touchend',  onTE);
+    };
+  },[onPrev,onNext]);
 
   return(
-    <div className="we-wrap" onTouchStart={onTS} onTouchEnd={onTE}>
+    <div className="we-wrap" ref={wrapRef}>
       <div className="we-grid">
         {weekends.map(we=>(
           <WeekendCard key={we.satStr} weekend={we} events={events}
