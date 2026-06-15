@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.9</title>
+  <title>Agenda Polare v15</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1855,7 +1855,7 @@ function MainApp({user}){
       end:y+'-'+String(m+1).padStart(2,'0')+'-'+String(dim).padStart(2,'0'),
       year:y,month:m
     };
-  },[view,polarPeriod,polarFilter,calSub,calWeekSub,sliceDates,weekOff,monthOff,selDay]);
+  },[view,polarPeriod,polarFilter,calSub,calWeekSub,sliceDates,weekOff,monthOff,weMonthOff,selDay]);
 
   // Nav label
   const navLabel=useMemo(()=>{
@@ -1876,7 +1876,7 @@ function MainApp({user}){
       return s.getDate()+' '+MESI[s.getMonth()].slice(0,3)+' — '+e.getDate()+' '+MESI[e.getMonth()].slice(0,3);
     }
     return MESI[period.month]+' '+period.year;
-  },[view,polarPeriod,polarFilter,calSub,sliceDates,selDay,period]);
+  },[view,polarPeriod,polarFilter,calSub,sliceDates,selDay,period,weMonthOff]);
 
   const goPrev=()=>{
     if(view==='day') setSelDay(d2s(addDays(new Date(selDay+'T12:00:00'),-1)));
@@ -2199,7 +2199,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
           .then(reg => { reg.addEventListener('updatefound', () => { const n=reg.installing; n.addEventListener('statechange',()=>{ if(n.state==='installed'&&navigator.serviceWorker.controller){n.postMessage({type:'SKIP_WAITING'});window.location.reload();} }); }); })
-          .catch(e => console.warn('SW errore', e));
+          .catch(e => console.warn('SW', e));
       });
     }
   </script>
