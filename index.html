@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.7</title>
+  <title>Agenda Polare v14.8</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -204,6 +204,7 @@
     .we-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .we-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s;position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y}
     .we-card.custom{border:2px solid var(--accent);box-shadow:0 0 12px rgba(56,189,248,.18)}
+    .we-card.pressing{opacity:.7;transform:scale(.97);transition:transform .1s}
     .we-card-hdr{padding:8px 10px 6px;border-bottom:1px solid var(--border)}
     .we-card-range{font-size:11px;font-weight:700;color:var(--text);line-height:1.3}
     .we-card-days{font-size:9px;color:var(--muted);margin-top:1px}
@@ -1502,38 +1503,26 @@ function WeekendExtendModal({weekend,onSave,onClose}){
   );
 }
 
-// ===== WEEKEND CARD =====
-function WeekendCard({weekend,events,onLongPress,onEventClick}){
+// ===== WEEKEND CARD (senza touch handler: gestito da WeekendGridView) =====
+function WeekendCard({weekend,events,onEventClick,pressing}){
   const{satStr,startStr,endStr,isCustom}=weekend;
   const startD=new Date(startStr+'T12:00:00');
   const endD=new Date(endStr+'T12:00:00');
-
-  // Etichetta range
   const startLbl=D_SHORT[dayIndex(startD)]+' '+startD.getDate();
   const endLbl=D_SHORT[dayIndex(endD)]+' '+endD.getDate();
   const monthLbl=MESI[endD.getMonth()].slice(0,3);
   const rangeLabel=startLbl+' – '+endLbl+' '+monthLbl;
-
-  // Quanti giorni
   const nDays=Math.round((endD-startD)/86400000)+1;
   const daysLabel=nDays===2?'Sab + Dom':nDays+' giorni';
-
-  // Filtra eventi nel range
   const cardEvs=events.filter(ev=>{
-    const s=ev.startDate||ev.date;
-    const e=ev.endDate||ev.date;
+    const s=ev.startDate||ev.date, e=ev.endDate||ev.date;
     return s&&e&&s<=endStr&&e>=startStr;
-  }).sort((a,b)=>{
-    if(a.date!==b.date) return a.date.localeCompare(b.date);
-    return(a.startTime||'').localeCompare(b.startTime||'');
-  });
-
-  const lp=useLongPress(onLongPress);
+  }).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):(a.startTime||'').localeCompare(b.startTime||''));
   const MAX_SHOWN=4;
-
   return(
-    <div className={'we-card'+(isCustom?' custom':'')} {...lp}>
-      {isCustom&&<div className="we-custom-badge">✦</div>}
+    <div className={'we-card'+(isCustom?' custom':'')+(pressing?' pressing':'')}
+      data-sat={satStr}>
+      {isCustom&&<div className="we-custom-badge">✶</div>}
       <div className="we-card-hdr">
         <div className="we-card-range">{rangeLabel}</div>
         <div className="we-card-days">{daysLabel}</div>
@@ -1547,51 +1536,82 @@ function WeekendCard({weekend,events,onLongPress,onEventClick}){
             <div className="we-ev-title">{ev.important?'★ ':''}{ev.title}</div>
           </div>
         ))}
-        {cardEvs.length>MAX_SHOWN&&(
-          <div className="we-ev-more">+{cardEvs.length-MAX_SHOWN} altri</div>
-        )}
+        {cardEvs.length>MAX_SHOWN&&<div className="we-ev-more">+{cardEvs.length-MAX_SHOWN} altri</div>}
       </div>
     </div>
   );
 }
 
 // ===== WEEKEND GRID VIEW =====
+// Gestore UNIFICATO: swipe orizzontale + long press gestiti qui, ZERO handler sulle card
 function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick,onPrev,onNext}){
   const weekends=getWeekendsForMonth(year,month,weekendCustom);
   const wrapRef=useRef(null);
-  const swRef=useRef({x:0,y:0,t:0});
+  const[pressingCard,setPressingCard]=useState(null);
 
-  // Listener DOM non-passivi: bypassa la gestione nativa dello scroll del browser
+  // Ref "vivi" per evitare stale closures nell'effect (montato una volta sola)
+  const dataRef=useRef({year,month,weekendCustom,onLongPress,onPrev,onNext});
+  dataRef.current={year,month,weekendCustom,onLongPress,onPrev,onNext};
+
   useEffect(()=>{
     const el=wrapRef.current; if(!el) return;
+    const st={}; // touch state
+
     const onTS=(e)=>{
-      const t=e.touches&&e.touches[0]; if(!t) return;
-      swRef.current={x:t.clientX,y:t.clientY,t:Date.now()};
+      const t=e.touches[0];
+      st.x=t.clientX; st.y=t.clientY; st.time=Date.now(); st.moved=false;
+      const card=e.target.closest&&e.target.closest('[data-sat]');
+      st.sat=card?card.dataset.sat:null;
+      if(st.sat){
+        setPressingCard(st.sat);
+        st.lp=setTimeout(()=>{
+          const d=dataRef.current;
+          const we=getWeekendsForMonth(d.year,d.month,d.weekendCustom).find(w=>w.satStr===st.sat);
+          if(we){ d.onLongPress(we); setPressingCard(null); }
+          st.lp=null;
+        },600);
+      }
     };
+
+    const onTM=(e)=>{
+      if(!st.lp) return;
+      const t=e.touches[0];
+      const dx=Math.abs(t.clientX-st.x), dy=Math.abs(t.clientY-st.y);
+      if(dx>10||dy>10){ clearTimeout(st.lp); st.lp=null; st.moved=true; setPressingCard(null); }
+    };
+
     const onTE=(e)=>{
-      const s=swRef.current;
-      const t=e.changedTouches&&e.changedTouches[0]; if(!t) return;
-      const dx=t.clientX-s.x, dy=t.clientY-s.y, dt=Date.now()-s.t;
-      if(dt>700||Math.abs(dx)<50||Math.abs(dx)<Math.abs(dy)*1.1) return;
-      // Swipe orizzontale rilevato: previene scroll e cambia mese
-      e.preventDefault();
-      if(dx<0) onNext(); else onPrev();
+      if(st.lp){clearTimeout(st.lp);st.lp=null;}
+      setPressingCard(null);
+      const t=e.changedTouches[0];
+      const dx=t.clientX-st.x, dy=t.clientY-st.y, dt=Date.now()-st.time;
+      // Swipe: veloce, orizzontale, ampio
+      if(dt<700&&Math.abs(dx)>=50&&Math.abs(dx)>=Math.abs(dy)*1.1){
+        if(dx<0) dataRef.current.onNext(); else dataRef.current.onPrev();
+      }
     };
-    el.addEventListener('touchstart',onTS,{passive:false}); // non-passivo: cattura coords subito
-    el.addEventListener('touchend',  onTE,{passive:false});
+
+    const onTC=()=>{ if(st.lp){clearTimeout(st.lp);st.lp=null;} setPressingCard(null); };
+
+    el.addEventListener('touchstart', onTS,{passive:true});
+    el.addEventListener('touchmove',  onTM,{passive:true});
+    el.addEventListener('touchend',   onTE,{passive:true});
+    el.addEventListener('touchcancel',onTC,{passive:true});
     return()=>{
-      el.removeEventListener('touchstart',onTS);
-      el.removeEventListener('touchend',  onTE);
+      el.removeEventListener('touchstart', onTS);
+      el.removeEventListener('touchmove',  onTM);
+      el.removeEventListener('touchend',   onTE);
+      el.removeEventListener('touchcancel',onTC);
     };
-  },[onPrev,onNext]);
+  },[]);
 
   return(
     <div className="we-wrap" ref={wrapRef}>
       <div className="we-grid">
         {weekends.map(we=>(
           <WeekendCard key={we.satStr} weekend={we} events={events}
-            onLongPress={()=>onLongPress(we)}
-            onEventClick={onEventClick}/>
+            onEventClick={onEventClick}
+            pressing={pressingCard===we.satStr}/>
         ))}
       </div>
     </div>
