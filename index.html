@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v14.8</title>
+  <title>Agenda Polare v14.9</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1503,121 +1503,66 @@ function WeekendExtendModal({weekend,onSave,onClose}){
   );
 }
 
-// ===== WEEKEND CARD (senza touch handler: gestito da WeekendGridView) =====
-function WeekendCard({weekend,events,onEventClick,pressing}){
+// ===== WEEKEND CARD =====
+function WeekendCard({weekend,events,onEventClick,onLongPress}){
   const{satStr,startStr,endStr,isCustom}=weekend;
   const startD=new Date(startStr+'T12:00:00');
   const endD=new Date(endStr+'T12:00:00');
   const startLbl=D_SHORT[dayIndex(startD)]+' '+startD.getDate();
   const endLbl=D_SHORT[dayIndex(endD)]+' '+endD.getDate();
-  const monthLbl=MESI[endD.getMonth()].slice(0,3);
-  const rangeLabel=startLbl+' – '+endLbl+' '+monthLbl;
+  const rangeLabel=startLbl+' – '+endLbl+' '+MESI[endD.getMonth()].slice(0,3);
   const nDays=Math.round((endD-startD)/86400000)+1;
   const daysLabel=nDays===2?'Sab + Dom':nDays+' giorni';
   const cardEvs=events.filter(ev=>{
     const s=ev.startDate||ev.date, e=ev.endDate||ev.date;
     return s&&e&&s<=endStr&&e>=startStr;
   }).sort((a,b)=>a.date!==b.date?a.date.localeCompare(b.date):(a.startTime||'').localeCompare(b.startTime||''));
-  const MAX_SHOWN=4;
+  // Long press via Pointer API: non tocca touchstart/touchend, non interferisce con swipe
+  const lpTimer=useRef(null);
+  const onPD=(e)=>{
+    lpTimer.current=setTimeout(()=>{ lpTimer.current=null; onLongPress(); },650);
+  };
+  const cancelLP=()=>{ if(lpTimer.current){clearTimeout(lpTimer.current);lpTimer.current=null;} };
   return(
-    <div className={'we-card'+(isCustom?' custom':'')+(pressing?' pressing':'')}
-      data-sat={satStr}>
-      {isCustom&&<div className="we-custom-badge">✶</div>}
+    <div className={'we-card'+(isCustom?' custom':'')}
+      onPointerDown={onPD} onPointerUp={cancelLP}
+      onPointerLeave={cancelLP} onPointerCancel={cancelLP}>
+      {isCustom&&<div className="we-custom-badge">&#10038;</div>}
       <div className="we-card-hdr">
         <div className="we-card-range">{rangeLabel}</div>
         <div className="we-card-days">{daysLabel}</div>
       </div>
       <div className="we-card-body">
         {cardEvs.length===0&&<div className="we-ev-empty">Nessun evento</div>}
-        {cardEvs.slice(0,MAX_SHOWN).map(ev=>(
+        {cardEvs.slice(0,4).map(ev=>(
           <div key={ev.id} className="we-ev-row"
             onClick={e=>{e.stopPropagation();onEventClick(ev);}}>
             <div className="we-ev-dot" style={{background:ev.color}}/>
-            <div className="we-ev-title">{ev.important?'★ ':''}{ev.title}</div>
+            <div className="we-ev-title">{ev.important?'&#9733; ':''}{ev.title}</div>
           </div>
         ))}
-        {cardEvs.length>MAX_SHOWN&&<div className="we-ev-more">+{cardEvs.length-MAX_SHOWN} altri</div>}
+        {cardEvs.length>4&&<div className="we-ev-more">+{cardEvs.length-4} altri</div>}
       </div>
     </div>
   );
 }
 
 // ===== WEEKEND GRID VIEW =====
-// Gestore UNIFICATO: swipe orizzontale + long press gestiti qui, ZERO handler sulle card
-function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick,onPrev,onNext}){
+// Zero touch handler qui: lo swipe e' gestito dal main container come tutte le altre tab
+function WeekendGridView({year,month,events,weekendCustom,onLongPress,onEventClick}){
   const weekends=getWeekendsForMonth(year,month,weekendCustom);
-  const wrapRef=useRef(null);
-  const[pressingCard,setPressingCard]=useState(null);
-
-  // Ref "vivi" per evitare stale closures nell'effect (montato una volta sola)
-  const dataRef=useRef({year,month,weekendCustom,onLongPress,onPrev,onNext});
-  dataRef.current={year,month,weekendCustom,onLongPress,onPrev,onNext};
-
-  useEffect(()=>{
-    const el=wrapRef.current; if(!el) return;
-    const st={}; // touch state
-
-    const onTS=(e)=>{
-      const t=e.touches[0];
-      st.x=t.clientX; st.y=t.clientY; st.time=Date.now(); st.moved=false;
-      const card=e.target.closest&&e.target.closest('[data-sat]');
-      st.sat=card?card.dataset.sat:null;
-      if(st.sat){
-        setPressingCard(st.sat);
-        st.lp=setTimeout(()=>{
-          const d=dataRef.current;
-          const we=getWeekendsForMonth(d.year,d.month,d.weekendCustom).find(w=>w.satStr===st.sat);
-          if(we){ d.onLongPress(we); setPressingCard(null); }
-          st.lp=null;
-        },600);
-      }
-    };
-
-    const onTM=(e)=>{
-      if(!st.lp) return;
-      const t=e.touches[0];
-      const dx=Math.abs(t.clientX-st.x), dy=Math.abs(t.clientY-st.y);
-      if(dx>10||dy>10){ clearTimeout(st.lp); st.lp=null; st.moved=true; setPressingCard(null); }
-    };
-
-    const onTE=(e)=>{
-      if(st.lp){clearTimeout(st.lp);st.lp=null;}
-      setPressingCard(null);
-      const t=e.changedTouches[0];
-      const dx=t.clientX-st.x, dy=t.clientY-st.y, dt=Date.now()-st.time;
-      // Swipe: veloce, orizzontale, ampio
-      if(dt<700&&Math.abs(dx)>=50&&Math.abs(dx)>=Math.abs(dy)*1.1){
-        if(dx<0) dataRef.current.onNext(); else dataRef.current.onPrev();
-      }
-    };
-
-    const onTC=()=>{ if(st.lp){clearTimeout(st.lp);st.lp=null;} setPressingCard(null); };
-
-    el.addEventListener('touchstart', onTS,{passive:true});
-    el.addEventListener('touchmove',  onTM,{passive:true});
-    el.addEventListener('touchend',   onTE,{passive:true});
-    el.addEventListener('touchcancel',onTC,{passive:true});
-    return()=>{
-      el.removeEventListener('touchstart', onTS);
-      el.removeEventListener('touchmove',  onTM);
-      el.removeEventListener('touchend',   onTE);
-      el.removeEventListener('touchcancel',onTC);
-    };
-  },[]);
-
   return(
-    <div className="we-wrap" ref={wrapRef}>
+    <div className="we-wrap">
       <div className="we-grid">
         {weekends.map(we=>(
           <WeekendCard key={we.satStr} weekend={we} events={events}
-            onEventClick={onEventClick}
-            pressing={pressingCard===we.satStr}/>
+            onLongPress={()=>onLongPress(we)}
+            onEventClick={onEventClick}/>
         ))}
       </div>
     </div>
   );
 }
-
 // ===== MONTH GRID =====
 function MonthGridView({year,month,events,onDayClick}){
   const first=new Date(year,month,1);
@@ -2168,7 +2113,7 @@ function MainApp({user}){
             weekendCustom={weekendCustom}
             onLongPress={we=>setWeExtModal(we)}
             onEventClick={ev=>setModal({ev,defDate:ev.date})}
-            onPrev={goPrev} onNext={goNext}/>
+/>
         )}
 
         {/* FAB */}
@@ -2253,17 +2198,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
-          .then(reg => {
-            reg.addEventListener('updatefound', () => {
-              const newSW = reg.installing;
-              newSW.addEventListener('statechange', () => {
-                if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                  newSW.postMessage({ type: 'SKIP_WAITING' });
-                  window.location.reload();
-                }
-              });
-            });
-          })
+          .then(reg => { reg.addEventListener('updatefound', () => { const n=reg.installing; n.addEventListener('statechange',()=>{ if(n.state==='installed'&&navigator.serviceWorker.controller){n.postMessage({type:'SKIP_WAITING'});window.location.reload();} }); }); })
           .catch(e => console.warn('SW errore', e));
       });
     }
