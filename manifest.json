@@ -1,7 +1,7 @@
 {
   "name": "Agenda Polare",
   "short_name": "Polare",
-  "description": "Agenda visuale in coordinate polari — mattina, pomeriggio, sera in un cerchio",
+  "description": "Agenda visuale in coordinate polari",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,38 +9,9 @@
   "background_color": "#040d1e",
   "theme_color": "#040d1e",
   "lang": "it",
-  "categories": [
-    "productivity",
-    "utilities"
-  ],
+  "version": "14.4",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [],
-  "shortcuts": [
-    {
-      "name": "Nuovo evento",
-      "short_name": "Nuovo",
-      "description": "Crea un nuovo evento",
-      "url": "./index.html",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ],
-  "version": "14.0"
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
 }
