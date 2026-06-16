@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v15</title>
+  <title>Agenda Polare v15.2</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -1098,8 +1098,9 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onD
 
   const clickAreas=sliceDates.map((wd,i)=>{
     const a1=ANG0+i*SLICE+.25,a2=a1+SLICE-.5;
+    const handler=onDayLabelClick?(()=>onDayLabelClick(d2s(wd))):onDayClick?(()=>onDayClick(d2s(wd))):undefined;
     return <path key={'ca'+i} d={arcPath(R[0],dayRingOuter,a1,a2)} fill="transparent"
-      onClick={()=>onDayClick(d2s(wd))} style={{cursor:'pointer'}}/>;
+      onClick={handler} style={{cursor:'pointer'}}/>;
   });
 
   const expandedEvents=[];
@@ -1203,7 +1204,7 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onD
   const centerY=sliceDates[0].getFullYear();
   return(
     <svg className="polar-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-      {ringBgs}{circles}{weekendHL}{todayHL}{eventArcs}{dayOuterPaths}{dividers}{labels}{clickAreas}
+      {ringBgs}{circles}{weekendHL}{todayHL}{clickAreas}{dayOuterPaths}{dividers}{labels}{eventArcs}
       <circle cx={CX} cy={CY} r={R[0]} fill={centerBg} stroke={centerStroke} strokeWidth="0.7"/>
       <text x={CX} y={CY-4} textAnchor="middle" fill={centerTxt}
         fontSize="8" fontFamily="Orbitron,monospace" letterSpacing="1">{centerLabel}</text>
@@ -2196,9 +2197,22 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 
   <script>
     if ('serviceWorker' in navigator) {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) { refreshing = true; window.location.reload(); }
+      });
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
-          .then(reg => { reg.addEventListener('updatefound', () => { const n=reg.installing; n.addEventListener('statechange',()=>{ if(n.state==='installed'&&navigator.serviceWorker.controller){n.postMessage({type:'SKIP_WAITING'});window.location.reload();} }); }); })
+          .then(reg => {
+            reg.update();
+            reg.addEventListener('updatefound', () => {
+              const n = reg.installing;
+              n.addEventListener('statechange', () => {
+                if (n.state === 'installed') n.postMessage({ type: 'SKIP_WAITING' });
+              });
+            });
+            if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          })
           .catch(e => console.warn('SW', e));
       });
     }
