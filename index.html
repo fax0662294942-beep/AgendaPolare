@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v15.5 DEBUG</title>
+  <title>Agenda Polare v15.6</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#040d1e">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Polare">
   <link rel="apple-touch-icon" href="icon-192.png">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -312,16 +314,9 @@
   </style>
 </head>
 <body>
-  <div id="err-display" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#7f1d1d;color:#fff;padding:16px;font-family:monospace;font-size:12px;white-space:pre-wrap;max-height:50vh;overflow:auto"></div>
+  <div id="err-display" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#7f1d1d;color:#fff;padding:14px;font-family:monospace;font-size:12px;white-space:pre-wrap"></div>
   <script>
-    window.addEventListener('error', function(e){
-      var d=document.getElementById('err-display');
-      if(d){ d.style.display='block'; d.textContent += '❌ ERRORE: '+e.message+'\n   '+(e.filename||'')+':'+(e.lineno||'')+'\n\n'; }
-    });
-    window.addEventListener('unhandledrejection', function(e){
-      var d=document.getElementById('err-display');
-      if(d){ d.style.display='block'; d.textContent += '❌ PROMISE: '+(e.reason&&e.reason.message||e.reason)+'\n\n'; }
-    });
+    window.addEventListener('error',function(e){var d=document.getElementById('err-display');if(d){d.style.display='block';d.textContent+='ERRORE: '+e.message+'\n';}});
   </script>
 <div id="root"></div>
 <script type="text/babel">
@@ -1156,7 +1151,13 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onD
           stroke={ev.important?'#fbbf24':(isDark?'rgba(255,255,255,.22)':'rgba(255,255,255,.45)')}
           strokeWidth={ev.important?"1":"0.28"}
           onClick={()=>onEventClick(ev)} style={{cursor:'pointer'}}>
-          <title>{ev.title}</title></path>);
+          <title>Agenda Polare v15.6</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#040d1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Polare">
+  <link rel="apple-touch-icon" href="icon-192.png"></path>);
       });
       if(ev.important){
         const midA=(aS+aE)/2;
@@ -1192,7 +1193,13 @@ function PolarRingView({sliceDates,events,ringOrder,activeFilters,onDayClick,onD
         stroke={ev.important?'#fbbf24':undefined}
         strokeWidth={ev.important?"0.8":undefined}
         onClick={()=>onEventClick(ev)} style={{cursor:'pointer'}}>
-        <title>{ev.title}{ev.important?' ⭐':''} {ev.startTime}-{ev.endTime}</title></path>);
+        <title>Agenda Polare v15.6</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#040d1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Polare">
+  <link rel="apple-touch-icon" href="icon-192.png"></path>);
     });
     if(ev.important){
       const midA=ANG0+(di2+.5)*SLICE;
@@ -1257,7 +1264,13 @@ function DayView({date,events,onEventClick,isDark=true}){
       fill={ev.color} opacity={opacity}
       stroke={ev.important?'#fbbf24':undefined} strokeWidth={ev.important?"1":undefined}
       onClick={()=>onEventClick(ev)} style={{cursor:'pointer'}}>
-      <title>{ev.title}{ev.important?' ⭐':''}</title></path>;
+      <title>Agenda Polare v15.6</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#040d1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Polare">
+  <link rel="apple-touch-icon" href="icon-192.png"></path>;
   });
   let nowHand=null;
   if(nowMin>=0){
@@ -2201,8 +2214,8 @@ function App(){
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }));
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
     }
   </script>
 </body>
