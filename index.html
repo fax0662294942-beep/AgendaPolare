@@ -3,16 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agenda Polare v15.4</title>
-
-  <!-- PWA -->
+  <title>Agenda Polare v15.5 DEBUG</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#040d1e">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Polare">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <meta name="mobile-web-app-capable" content="yes">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -317,6 +312,17 @@
   </style>
 </head>
 <body>
+  <div id="err-display" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#7f1d1d;color:#fff;padding:16px;font-family:monospace;font-size:12px;white-space:pre-wrap;max-height:50vh;overflow:auto"></div>
+  <script>
+    window.addEventListener('error', function(e){
+      var d=document.getElementById('err-display');
+      if(d){ d.style.display='block'; d.textContent += '❌ ERRORE: '+e.message+'\n   '+(e.filename||'')+':'+(e.lineno||'')+'\n\n'; }
+    });
+    window.addEventListener('unhandledrejection', function(e){
+      var d=document.getElementById('err-display');
+      if(d){ d.style.display='block'; d.textContent += '❌ PROMISE: '+(e.reason&&e.reason.message||e.reason)+'\n\n'; }
+    });
+  </script>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useRef, useMemo } = React;
@@ -2194,12 +2200,9 @@ function App(){
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
-
-  <script>
+<script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
-      });
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }));
     }
   </script>
 </body>
